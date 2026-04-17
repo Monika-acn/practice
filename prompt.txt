@@ -138,3 +138,11 @@ pipeline {
         }
     }
 }
+
+Build Docker Image
+docker build -t your-dockerhub-username/my-app:1.0 .
+
+Push Image to Docker Hub
+docker push your-dockerhub-username/my-app:1.0
+
+
