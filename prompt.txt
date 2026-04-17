@@ -1,0 +1,140 @@
+prompt:
+You are a DevOps expert. Solve the given question step-by-step and give complete working solution.
+
+Include ALL of the following clearly:
+
+1. Manual Project Setup (Windows Commands)
+
+* Create folder and full Spring Boot structure:
+  mkdir project-name
+  cd project-name
+  mkdir src\main\java\com\example\app
+  mkdir src\main\resources
+  mkdir src\test\java\com\example\app
+* Tell exactly where to create:
+
+  * pom.xml → root folder
+  * App.java → src/main/java/com/example/app
+  * Controller.java → same package
+  * application.properties → src/main/resources
+
+2. Full Code
+
+* Provide complete working code for:
+
+  * pom.xml (Spring Boot + plugins + jar packaging)
+  * Main class with @SpringBootApplication
+  * REST Controller
+  * JUnit Test case
+
+3. GitHub Setup
+
+* Suggest a proper repository name
+* Provide commands:
+  git init
+  git add .
+  git commit -m "initial commit"
+  git branch -M main
+  git remote add origin <repo-url>
+  git push -u origin main
+
+4. Jenkins Pipeline (main branch)
+
+* Provide FULL working Jenkinsfile:
+
+  * Clone from GitHub (main branch)
+  * Build using Maven
+  * Run tests
+  * Docker build
+  * Docker push (if required using PAT)
+* Include credentials usage if needed
+
+5. Docker Setup
+
+* Provide Dockerfile
+
+* Commands:
+  docker build -t app-name .
+  docker run -p 9090:9090 app-name
+
+* If pushing to Docker Hub:
+  Explain using PAT:
+
+  * docker login using username + PAT
+  * docker tag app-name username/app-name
+  * docker push username/app-name
+
+* Jenkins Docker Push Stage:
+  withCredentials([usernamePassword(credentialsId: 'docker-cred', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+  bat 'docker login -u %USER% -p %PASS%'
+  bat 'docker tag app-name %USER%/app-name'
+  bat 'docker push %USER%/app-name'
+  }
+
+6. Kubernetes Setup
+
+* Provide deployment.yaml and service.yaml
+* Use correct image name
+* If using local Docker Desktop:
+  imagePullPolicy: Never
+* Commands:
+  kubectl apply -f deployment.yaml
+  kubectl apply -f service.yaml
+  kubectl get pods
+  kubectl get services
+
+7. Error Handling (must include)
+
+* Port already in use → change port or kill process
+* Docker daemon not running → start Docker Desktop
+* Kubernetes auth issue → explain kubeconfig / Jenkins limitation
+* GitHub error → check branch and push code
+
+8. Final Flow (for exam writing)
+   VS Code → GitHub → Jenkins → Maven → Docker → Kubernetes
+
+Give answer in clean steps with commands + code ready to execute.
+
+
+jenkin pipeline script:
+
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = "food-app"
+    }
+
+    stages {
+
+        stage('Clone Code') {
+            steps {
+                git branch: 'main', url: 'https://github.com/harishsudhakar06/food-delivery-cicd.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                bat 'mvn clean package'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                bat 'mvn test'
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                bat 'docker build -t %IMAGE_NAME% .'
+            }
+        }
+
+        stage('Kubernetes Deploy') {
+            steps {
+                echo 'Build and Docker completed successfully'
+            }
+        }
+    }
+}
